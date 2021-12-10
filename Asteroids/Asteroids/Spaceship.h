@@ -7,7 +7,8 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/Main.hpp>
 #include<math.h>
-#include "Math.h"
+#include "GameManager.h"
+#include"Asteroid.h"
 #include<iostream>
 
 using namespace std;
@@ -26,6 +27,12 @@ public:
 	float speed;
 	float angle = -90.f;
 	float lastAngle = -90.f;
+	bool isDead = false;
+	bool justDied = false;
+	bool disableMesh = false;
+	Clock respawnClock;
+	float respawnTimer = 3.f;
+	float hitTime = 0;
 	Vector2f currentShipPos;
 
 	float rotationSpeed = 10;
@@ -37,6 +44,8 @@ public:
 	Vector2f Velocity(float speed);
 	Vector2f Direction(float ang);
 	void ContinueMovement(float speede, float deltTime);
+	void CollisionWithAsteroid(Asteroid* asteroid, GameManager* gameManager);
+	void DisableMesh(int shipClock);
 
 };
 

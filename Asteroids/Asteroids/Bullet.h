@@ -7,7 +7,8 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/Main.hpp>
 #include<math.h>
-#include "Math.h"
+#include "GameManager.h"
+#include"Asteroid.h"
 #include<iostream>
 
 class Bullet
@@ -18,7 +19,7 @@ public:
 	Vector2f direction;
 	Clock bulletClock;
 	float radius;
-	float bulletSpeed = 2000.f;
+	float bulletSpeed = 1000.f;
 	float bulletLifeTime = 5.f;
 	bool shoulGoBackToInitialPosition;
 
@@ -29,5 +30,7 @@ public:
 	void StickToShip(Vector2f shipPosition);
 	void BulletMovement(Vector2f shipPosition, Vector2f directionToFace, float deltaTime, float winX, float winY);
 	void WarpBullet(RenderWindow* window);
+
+	void CollisionWithAsteroid(Asteroid* asteroid, GameManager* gameManager);
 };
 

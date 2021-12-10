@@ -28,91 +28,65 @@ Vector2f Spaceship::Rotate(Vector2f vec, float angle, bool clockWise)
 
 void Spaceship::Movement(float deltaTime)
 {
-    Vector2f position = ship.getPosition();
-    position += shipVelocity * deltaTime;
-    if (Keyboard::isKeyPressed(Keyboard::Key::Up)) 
+    if (!isDead) 
     {
-        speed = 450.f;
-        /*shipVelocity.y -= speed * deltaTime;
-        if (shipVelocity.y <= -500.f)    shipVelocity.y = -500.f;*/
-        ContinueMovement(speed, deltaTime);
-        lastAngle = angle;
-    }
-
-    else if (!Keyboard::isKeyPressed(Keyboard::Up))
-    {  
-        float dampSpeed = 200.f;
-        if (speed > 0)
+        Vector2f position = ship.getPosition();
+        position += shipVelocity * deltaTime;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Up))
         {
-            speed -= dampSpeed * deltaTime;
+            speed = 200.f;
             ContinueMovement(speed, deltaTime);
+            lastAngle = angle;
         }
-    }
-     if (Keyboard::isKeyPressed(Keyboard::Key::Left))
-    {
-        float val = -400.0f * deltaTime;
-        angle += val;
 
-        if (abs(angle) > 360)
+        else if (!Keyboard::isKeyPressed(Keyboard::Up))
         {
-            if (angle > 0)
+            float dampSpeed = 200.f;
+            if (speed > 0)
             {
-                angle = abs(angle) - 360;
-            }
-            else
-            {
-                angle = -(abs(angle) - 360);
+                speed -= dampSpeed * deltaTime;
+                ContinueMovement(speed, deltaTime);
             }
         }
-        ship.rotate(val);
-    }
-
-     if (Keyboard::isKeyPressed(Keyboard::Key::Right))
-     {
-        float val = 400.0f * deltaTime;
-        angle += val;
-
-        if (abs(angle) > 360)
+        if (Keyboard::isKeyPressed(Keyboard::Key::Left))
         {
-            if (angle > 0)
+            float val = -400.0f * deltaTime;
+            angle += val;
+
+            if (abs(angle) > 360)
             {
-                angle = abs(angle) - 360;
+                if (angle > 0)
+                {
+                    angle = abs(angle) - 360;
+                }
+                else
+                {
+                    angle = -(abs(angle) - 360);
+                }
             }
-            else
-            {
-                angle = -(abs(angle) - 360);
-            }
+            ship.rotate(val);
         }
-        ship.rotate(val);
+
+        if (Keyboard::isKeyPressed(Keyboard::Key::Right))
+        {
+            float val = 400.0f * deltaTime;
+            angle += val;
+
+            if (abs(angle) > 360)
+            {
+                if (angle > 0)
+                {
+                    angle = abs(angle) - 360;
+                }
+                else
+                {
+                    angle = -(abs(angle) - 360);
+                }
+            }
+            ship.rotate(val);
+        }
     }
-
-    ///*else 
-    //{
-    //    float dampAmount = 250.f;
-
-    //    if (shipVelocity.x >= 0) 
-    //    {
-    //        shipVelocity.x -= dampAmount * deltaTime;
-    //    }
-    //    else 
-    //    {
-    //        shipVelocity.x += dampAmount * deltaTime;
-    //    }
-    //    if (shipVelocity.y >= 0)
-    //    {
-    //        shipVelocity.y -= dampAmount * deltaTime;
-    //    }
-    //    else
-    //    {
-    //        shipVelocity.y += dampAmount * deltaTime;
-    //    }
-    //    
-    //    if (shipVelocity.x >= -0.1f && shipVelocity.x <= 0.1f)  shipVelocity.x = 0.f;
-    //    if (shipVelocity.y >= -0.1f && shipVelocity.y <= 0.1f)  shipVelocity.y = 0.f;
-    //}*/
-    ////cout << shipVelocity.x << "-----" << shipVelocity.y << endl;
     
-    //ship.setPosition(position);
 }
 
 void Spaceship::WarpShip(RenderWindow* window)
@@ -137,7 +111,30 @@ void Spaceship::WarpShip(RenderWindow* window)
     ship.setPosition(shipPos);
 }
 
-
+void Spaceship::DisableMesh(int shipClock)
+{
+    if (justDied)
+    {
+        shipClock = respawnClock.getElapsedTime().asSeconds();   
+        cout << "ShipClock " << shipClock << "RT " << respawnClock.getElapsedTime().asSeconds()<<endl;
+        if (shipClock + 1 <= respawnClock.getElapsedTime().asSeconds())
+        {
+            cout << "Collision1\n";
+            disableMesh = false;
+        }
+        if (shipClock + 2 <= respawnClock.getElapsedTime().asSeconds())
+        {
+            cout << "Collision2\n";
+            disableMesh = true;
+        }
+        if (shipClock + 2 <= respawnClock.getElapsedTime().asSeconds())
+        {
+            cout << "Collision3\n";
+           disableMesh = false;
+           justDied = false;
+        }
+    }
+}
 
 Vector2f Spaceship::Direction(float angle)
 {
@@ -158,34 +155,36 @@ Vector2f Spaceship::Velocity(float speed)
     }
     return Vector2f(velocity);
 }
+
 void Spaceship::ContinueMovement(float speed, float deltaTime)
 {
-    currentShipPos = ship.getPosition();
-    currentShipPos += Velocity( speed) * deltaTime;
-    ship.setPosition(currentShipPos);
+    if (!isDead) 
+    {
+        currentShipPos = ship.getPosition();
+        currentShipPos += Velocity(speed) * deltaTime;
+        ship.setPosition(currentShipPos);
+    }
+    
 }
 
+void Spaceship::CollisionWithAsteroid(Asteroid* asteroid, GameManager* gameManager)
+{
+    if (asteroid->isDead)	return;
+    FloatRect shipRect = ship.getGlobalBounds();
+    FloatRect asteroidRect = asteroid->asteroid.getGlobalBounds();
 
-
-
-
-
-
-
-
-//void Bullet::Spawn(sf::Vector2f shipPos, sf::Vector2f direction)
-//{
-//    bullet.setPosition(shipPos.x - bullet.getRadius(), shipPos.y - bullet.getRadius());
-//    bullet.setFillColor(sf::Color::Red);
-//    showBullet = true;
-//    dir = direction;
-//}
-//
-//void Bullet::Movement(float dTime, sf::Vector2f shipPos, float win_x, float win_y)
-//{
-//    sf::Vector2f currentPos = bullet.getPosition();
-//
-//    currentPos += dir * bulletSpeed * dTime;
-//}
-//
-//newBullet.Spawn(shipClass.shipShape.getPosition(), shipClass.Direction(shipClass.angle));
+    if ((shipRect.intersects(asteroidRect) && (!asteroid->isDead && !asteroid->isDisabled)) && !justDied)
+    {
+        hitTime = respawnClock.getElapsedTime().asSeconds();
+        justDied = true;
+        gameManager->numberOfLives--;
+        if (gameManager->numberOfLives <= 0) 
+        {
+            gameManager->numberOfLives = 0;
+            isDead = true;
+            gameManager->DeathText.setString("You DIED!");
+            gameManager->EndScreenScoreText.setString("YOUR FINAL SCORE = " + to_string(gameManager->playerScore));
+        }  
+        gameManager->numberOfLivesText.setString("Number Of Lives = " + to_string(gameManager->numberOfLives));
+    }
+}

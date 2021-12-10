@@ -16,11 +16,11 @@ void Bullet::StickToShip(Vector2f shipPosition)
 
 void Bullet::BulletMovement(Vector2f shipPosition, Vector2f directionToFace, float deltaTime, float winX, float winY)
 {
-		bulletSpawned = true;	
+		bulletSpawned = true;
 		Vector2f currentPos = bullet.getPosition();
 		direction = directionToFace;
 		currentPos += direction * bulletSpeed * deltaTime;
-		bullet.setPosition(currentPos);
+		bullet.setPosition(currentPos);	
 }
 
 void Bullet::WarpBullet(RenderWindow* window) 
@@ -43,4 +43,20 @@ void Bullet::WarpBullet(RenderWindow* window)
 		bulletPos.y = 0;
 	}
 	bullet.setPosition(bulletPos);
+}
+
+void Bullet::CollisionWithAsteroid(Asteroid* asteroid, GameManager* gameManager)
+{
+	if (asteroid->isDead || asteroid->isDisabled)	return;
+	FloatRect ballRect = bullet.getGlobalBounds();
+	FloatRect asteroidRect = asteroid->asteroid.getGlobalBounds();
+
+	if (ballRect.intersects(asteroidRect) && bulletSpawned)
+	{
+		asteroid->isDead = true;
+		asteroid->initialPostion = asteroid->asteroid.getPosition();
+		gameManager->playerScore += asteroid->scoreIncrementOnDestroy;
+		gameManager->playerScoreText.setString("SCORE = " + to_string(gameManager->playerScore));
+
+	}
 }
