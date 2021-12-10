@@ -118,7 +118,9 @@ int main()
         smallAsteroids.push_back(smallMed);
         
     }
-
+    gameManager.BGM.play();
+    gameManager.BGM.setVolume(10.f);
+    gameManager.BGM.setLoop(true);
 
     while (window.isOpen())
     {
@@ -156,8 +158,8 @@ int main()
 
                 window.clear();
                 window.draw(spaceSprite);
-                window.draw(gameManager.PlayGameText);
-                window.draw(gameManager.QuitGameText);
+                
+
 #pragma region drawAsteroids
                 for (int i = 0; i < asteroidCount; i++)
                 {
@@ -189,6 +191,10 @@ int main()
 
                 }
 #pragma endregion
+                window.draw(gameManager.ControlsText);
+                window.draw(gameManager.PlayGameText);
+                window.draw(gameManager.QuitGameText);
+                
                 window.display();
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P))
@@ -199,7 +205,7 @@ int main()
                     gameManager.numberOfLivesText.setString("Number Of Lives = " + to_string(gameManager.numberOfLives));
                     gameManager.playerScore = 0;
                     gameManager.playerScoreText.setString("SCORE = " + to_string(gameManager.playerScore));
-
+                    ship.ship.setPosition(ship.InitialPostion);
 
                     gameLevel = 1;
                 }
@@ -268,7 +274,7 @@ int main()
 
                     }
 
-                    if (clockValue + 0.35f >= bullets[bulletIndex].bulletClock.getElapsedTime().asSeconds())
+                    if (clockValue + 0.15f >= bullets[bulletIndex].bulletClock.getElapsedTime().asSeconds())
                     {
                         bullets[bulletIndex].BulletMovement(ship.ship.getPosition(), bullets[bulletIndex].direction, delta_s, 800, 600);
                     }
@@ -276,6 +282,7 @@ int main()
                     else
                     {
                         bullets[bulletIndex].bulletSpawned = false;
+                        gameManager.shoot.play();
                         bulletIndex = (bulletIndex + 1) % bulletCount;
                         bullets[bulletIndex].bulletSpawned = false;
                         spacePressed = false;
@@ -336,7 +343,8 @@ int main()
                         smallAsteroids[i].isDead = false;
                         smallAsteroids[i].isDisabled = true;
                     }
-                    gameManager.numberOfLives = 3;
+                    ship.ship.setPosition(ship.InitialPostion);
+                    gameManager.numberOfLives = 5;
                     gameManager.playerScore = 0;
                     isInGame = false;
                     window.clear();
@@ -475,6 +483,7 @@ int main()
 
         if (gameManager.numberOfLives <= 0) 
         {
+            gameManager.gameOverSound.play();
             isInGameOverScreen = true;
             bool playerHasEnteredTheInput = false;
                     while (!playerHasEnteredTheInput)
@@ -547,8 +556,9 @@ int main()
         
         if (areAllAsteroidDestroyed) 
         {
+            gameManager.winLevelSound.play();
             gameLevel++;
-            gameManager.numberOfLives++;
+            gameManager.numberOfLives += (gameManager.gameLevel / 2) + 1;
             gameManager.numberOfLivesText.setString("Number Of Lives = " + to_string(gameManager.numberOfLives));
             gameManager.gameLevel++;
             gameManager.gameLevelText.setString("LEVEL " + to_string(gameLevel));
@@ -638,9 +648,12 @@ int main()
         }
 #pragma endregion
 
-        
+        if (!ship.disableFire && !ship.disableMesh) {
+            window.draw(ship.thruster);
+        }
         if(!ship.isDead && !ship.disableMesh)
         window.draw(ship.ship);
+        
         window.draw(gameManager.numberOfLivesText);
         window.draw(gameManager.gameLevelText);
         if (ship.justDied && gameManager.numberOfLives > 0)   window.draw(gameManager.RespawnText);

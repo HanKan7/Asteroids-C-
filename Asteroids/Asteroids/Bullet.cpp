@@ -53,6 +53,7 @@ void Bullet::CollisionWithAsteroid(Asteroid* asteroid, GameManager* gameManager)
 
 	if (ballRect.intersects(asteroidRect) && bulletSpawned)
 	{
+		gameManager->astHitSound.play();
 		asteroid->isDead = true;
 		asteroid->initialPostion = asteroid->asteroid.getPosition();
 		gameManager->playerScore += asteroid->scoreIncrementOnDestroy;

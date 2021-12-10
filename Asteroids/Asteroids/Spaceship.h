@@ -16,20 +16,23 @@ using namespace sf;
 class Spaceship
 {
 public:
-	sf::RectangleShape ship;
-	sf::Vector2f Size;
-	sf::Vector2f InitialPostion;
-	sf::Vector2f shipVelocity = Vector2f(0.f, 0.f);
-	sf::Color color;
-	sf::FloatRect shipRect;
-	sf::Vector2i prevMousPos = sf::Vector2i(0, 0);
-	sf::Texture texture;
+	RectangleShape ship;
+	RectangleShape thruster;
+	Vector2f Size;
+	Vector2f InitialPostion;
+	Vector2f shipVelocity = Vector2f(0.f, 0.f);
+	Color color;
+	FloatRect shipRect;
+	Vector2i prevMousPos = sf::Vector2i(0, 0);
+	Texture texture;
+	Texture fireTexture;
 	float speed;
 	float angle = -90.f;
 	float lastAngle = -90.f;
 	bool isDead = false;
 	bool justDied = false;
 	bool disableMesh = false;
+	bool disableFire;
 	Clock respawnClock;
 	float respawnTimer = 3.f;
 	float hitTime = 0;

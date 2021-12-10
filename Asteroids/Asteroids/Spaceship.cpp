@@ -6,16 +6,29 @@ Spaceship::Spaceship()
     this->InitialPostion = sf::Vector2f(385.0f, 300.0f);
     this->Size = sf::Vector2f(50.0f, 50.0f);
     this->color = sf::Color::White;
+
     ship.setFillColor(color);
     ship.setOrigin(Vector2f(25.f, 25.f));
     ship.setPosition(InitialPostion);
     ship.setSize(Size);
+
+    thruster.setSize(Vector2f(50.f, 50.f));
+    //thruster.setOrigin(Vector2f(25.f, 25.f));
+    thruster.setOrigin(ship.getOrigin().x, ship.getOrigin().y + 30.f);
+    thruster.setPosition(InitialPostion + Vector2f(0.f, 25.f));
+    
+
     shipRect = ship.getGlobalBounds();
     const char* texturePath("Spaceship.png");
     if (!texture.loadFromFile(texturePath)) {
         cout << "Failed to load texture\n";
     }
+    const char* texturePat("Thruster.png");
+    if (!fireTexture.loadFromFile(texturePat)) {
+        cout << "Failed to load texture\n";
+    }
     ship.setTexture(&texture);
+    thruster.setTexture(&fireTexture);
 }
 
 Vector2f Spaceship::Rotate(Vector2f vec, float angle, bool clockWise)
@@ -37,11 +50,12 @@ void Spaceship::Movement(float deltaTime)
             speed = 200.f;
             ContinueMovement(speed, deltaTime);
             lastAngle = angle;
+            thruster.setRotation(angle + 270);
         }
 
         else if (!Keyboard::isKeyPressed(Keyboard::Up))
         {
-            float dampSpeed = 200.f;
+            float dampSpeed = 100.f;
             if (speed > 0)
             {
                 speed -= dampSpeed * deltaTime;
@@ -65,6 +79,8 @@ void Spaceship::Movement(float deltaTime)
                 }
             }
             ship.rotate(val);
+            //thruster.rotate(val + 180);
+            thruster.setRotation(angle + 270);
         }
 
         if (Keyboard::isKeyPressed(Keyboard::Key::Right))
@@ -84,6 +100,8 @@ void Spaceship::Movement(float deltaTime)
                 }
             }
             ship.rotate(val);
+            //thruster.rotate(val + 180);
+            thruster.setRotation(angle + 270);
         }
     }
     
@@ -147,10 +165,12 @@ Vector2f Spaceship::Velocity(float speed)
     Vector2f velocity;
     if (Keyboard::isKeyPressed(Keyboard::Key::Up))
     {
+        disableFire = false;
          velocity = Vector2f(speed * Direction(angle).x, speed * Direction(angle).y);
     }
     else 
     {
+        disableFire = true;
          velocity = Vector2f(speed * Direction(lastAngle).x, speed * Direction(lastAngle).y);
     }
     return Vector2f(velocity);
@@ -163,6 +183,8 @@ void Spaceship::ContinueMovement(float speed, float deltaTime)
         currentShipPos = ship.getPosition();
         currentShipPos += Velocity(speed) * deltaTime;
         ship.setPosition(currentShipPos);
+        thruster.setPosition(ship.getPosition());
+        thruster.setPosition(ship.getPosition().x, ship.getPosition().y + 0.25f);
     }
     
 }
@@ -175,6 +197,7 @@ void Spaceship::CollisionWithAsteroid(Asteroid* asteroid, GameManager* gameManag
 
     if ((shipRect.intersects(asteroidRect) && (!asteroid->isDead && !asteroid->isDisabled)) && !justDied)
     {
+        gameManager->death.play();
         hitTime = respawnClock.getElapsedTime().asSeconds();
         justDied = true;
         gameManager->numberOfLives--;

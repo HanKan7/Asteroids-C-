@@ -19,7 +19,7 @@ public:
 	Vector2f direction;
 	Clock bulletClock;
 	float radius;
-	float bulletSpeed = 1000.f;
+	float bulletSpeed = 2000.f;
 	float bulletLifeTime = 5.f;
 	bool shoulGoBackToInitialPosition;
 

@@ -12,7 +12,7 @@ using namespace sf;
 class GameManager
 {
 public:
-	int numberOfLives = 30;
+	int numberOfLives = 5;
 	int playerScore = 0;
 	int gameLevel = 1;
 
@@ -20,6 +20,7 @@ public:
 	Text numberOfLivesText;
 	Text gameLevelText;
 	Text playerScoreText;
+	Text ControlsText;
 
 	Text EndScreenScoreText;
 	Text GoToMainMenuText;
@@ -32,6 +33,22 @@ public:
 	Text PlayerScoreOnMenuText;
 
 	Text PlayGameText;
+
+
+	SoundBuffer BGMBuffer;
+	SoundBuffer shootBuffer;
+	SoundBuffer deathBuffer;
+	SoundBuffer gameOverBuffer;
+	SoundBuffer winLevelBuffer;
+	SoundBuffer AstHitBuffer;
+
+	Sound BGM;
+	Sound shoot;
+	Sound death;
+	Sound gameOverSound;
+	Sound winLevelSound;
+	Sound astHitSound;
+
 
 	GameManager();
 
